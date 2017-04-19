@@ -4,9 +4,6 @@ import scala.io.Source
 
 import sx.blah.discord.api.ClientBuilder
 
-/**
-  * Created by amnde_000 on 4/18/2017.
-  */
 object Driver {
   def login(token: String): Option[SpoilerBot] = {
     val builder = new ClientBuilder
@@ -20,8 +17,5 @@ object Driver {
     println(token)
     val bot = login(token)
     println(bot)
-    while(true) {
-
-    }
   }
 }
