@@ -23,7 +23,7 @@ class SpoilerBot(client: IDiscordClient) {
       return
     }
 
-    val pattern = """^<@!?\d+> (.*) == (.*)""".r
+    val pattern = """(?s)^<@!?\d+> (.*?) == (.*)""".r
 
     val messages = pattern.findAllIn(event.getMessage.getContent).matchData.next.subgroups
 
