@@ -4,13 +4,14 @@ import sx.blah.discord.api.IDiscordClient
 import sx.blah.discord.api.events.EventSubscriber
 import sx.blah.discord.handle.impl.events.ReadyEvent
 import sx.blah.discord.handle.impl.events.guild.channel.message.MentionEvent
+import sx.blah.discord.util.RequestBuffer
 
 class SpoilerBot(client: IDiscordClient) {
   client.getDispatcher.registerListener(this)
 
   @EventSubscriber
   def onReady(event: ReadyEvent): Unit = {
-    println("Logged in")
+    println("Is ready")
   }
 
   // syntax: @bot replacement text == spoiler text
@@ -23,12 +24,13 @@ class SpoilerBot(client: IDiscordClient) {
       return
     }
 
-    val pattern = """(?s)^<@!?\d+> (.*?) == (.*)""".r
-
-    val messages = pattern.findAllIn(event.getMessage.getContent).matchData.next.subgroups
-
-    event.getMessage.delete
-
-    event.getMessage.getChannel.sendMessage("I was mentioned by " + event.getAuthor.mention() + ", who wanted \"" + messages(1) + "\" replaced by \"" + messages(0) + "\"")
+    val text = """(?s)^<@!?\d+> (.*?) == (.*)""".r
+    event.getMessage.getContent match {
+      case text(replacement, spoiler) =>
+        println("found\n" + replacement + "\n" + spoiler)
+        RequestBuffer.request(() => { event.getMessage.delete() }) // TODO: rest of the exceptions
+        RequestBuffer.request(() => { event.getMessage.getChannel.sendMessage("I was mentioned by " + event.getAuthor.mention() + ", who wanted \"" + spoiler + "\" replaced by \"" + replacement + "\"") })
+      case _ => println("not found")
+    }
   }
 }
